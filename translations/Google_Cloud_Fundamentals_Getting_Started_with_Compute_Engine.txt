@@ -1,0 +1,86 @@
+#LAB: Google Cloud Fundamentals: Getting Started with Compute Engine
+
+#LAB OBJECTIVES:
+In this lab, you will learn how to perform the following tasks:
+
+Create a Compute Engine virtual machine using the Google Cloud Platform (GCP) Console.
+
+Create a Compute Engine virtual machine using the gcloud command-line interface.
+
+Connect between the two instances.
+
+#STEPS:
+
+1.Create a virtual machine using the GCP Console
+
+  gcloud compute instances create my-vm-1 --machine-type=n1-standard-1 --image-project=debian-cloud --image=debian-9-stretch-v2019023 --subnet=default --tag=http-server
+
+  gcloud compute firewall-rules create allow-http --action=ALLOW rules=tcp:80 --direction=Ingress --source-ranges=0.0.0.0/0  --target-tags=http-server
+
+
+2.Create a virtual machine using the gcloud command line
+  2.1 choose a zone from the output of this command and use grep to filter the result:
+        gcloud compute zones list | grep us-central-1
+
+   gcloud config set compute/zone us-central-1b
+
+   gcloud compute instances create my-vm-2 --machine-type=n1-standard-1 --image-project=debian-cloud --image=debian-9-stretch-v2019023 --subnet=default      
+
+
+3. Connect between Virtual Machine(VM) instances created above
+  3.1.Use the ping command to connect my-vm-1 and my-vm-2 over a network:
+   -connect to my-vm-2:
+          
+          gcloud compute ssh my-vm-2
+
+   -ping my-vm-1 from within my-vm-2
+         
+          ping -c 3 my-vm-1
+
+   -Use the ssh command to open a command prompt on my-vm-1:
+
+          ssh my-vm-1
+
+   -At the command prompt on my-vm-1, install the Nginx web server:
+         
+          sudo apt-get install nginx-light -y
+
+   -Use the nano text editor to add a custom message to the home page of the web server:
+          
+          sudo nano /var/www/html/index.nginx-debian.html
+
+   -Use the arrow keys to move the cursor to the line just below the h1 header. Add text like this, and replace YOUR_NAME with your name
+          
+          Hi from YOUR_NAME
+
+   -exit the nano text editor and confirm that the web server is serving your new page.At the command prompt on my-vm-1, execute this command:
+
+          curl http://localhost/
+
+         -Response : The response will be the HTML source of the web server's home page, including your line of custom text
+
+
+   -Exit the command prompt on my-vm-1 with the following command: 
+
+          exit 
+        
+         -Response : You will return to the command prompt on my-vm-2
+
+
+   -To confirm that my-vm-2 can reach the web server on my-vm-1, at the command prompt on my-vm-2, execute this command:
+          
+          curl http://my-vm-1/
+
+          -Response:
+                 The response will again be the HTML source of the web server's home page, including your line of custom text
+
+  3.2.Now get the external IP of my-vm-1 from this command :
+
+         gcloud compute instances list         
+
+
+ 3.3.Copy the External IP address for my-vm-1 and paste it into the address bar of a new browser tab       
+
+
+  
+  
